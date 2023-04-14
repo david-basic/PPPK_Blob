@@ -19,8 +19,5 @@
         <Style TargetType="Button">
             <Setter Property="Foreground" Value="White" />
         </Style>
-        <Style TargetType="Border">
-            <Setter Property="BorderBrush" Value="White" />
-        </Style>
     </Application.Resources>
 </Application>
