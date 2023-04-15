@@ -13,6 +13,7 @@ namespace PPPK_Blob.ViewModels
     internal class ItemsViewModel
     {
         public const string FORWARD_SLASH = "/";
+        private readonly List<string> ALLOWED_FILE_TYPES = new List<string> { "JPEG", "TIFF", "PNG", "SVG", "GIF" };
 
         public ObservableCollection<string> Directories { get; }
         public ObservableCollection<BlobItem> Items { get; }
@@ -62,20 +63,25 @@ namespace PPPK_Blob.ViewModels
             });
         }
 
-        public async Task UploadAsync(string path, string dir)
+        public async Task UploadAsync(string path)
         {
             string filename = path.Substring(path.LastIndexOf(Path.DirectorySeparatorChar) + 1);
+            string directoryName = path.Substring(path.LastIndexOf(".") + 1).ToUpper();
 
-            if (!string.IsNullOrEmpty(dir))
+            foreach (var item in ALLOWED_FILE_TYPES)
             {
-                filename = $"{dir}{FORWARD_SLASH}{filename}";
-            }
+                if (item == directoryName)
+                {
+                    filename = $"{directoryName}{FORWARD_SLASH}{filename}";
 
-            using (var fs = File.OpenRead(path))
-            {
-                await Repository.Container.GetBlobClient(filename).UploadAsync(fs, true);
+                    using (var fs = File.OpenRead(path))
+                    {
+                        await Repository.Container.GetBlobClient(filename).UploadAsync(fs, true);
+                    }
+
+                    Refresh();
+                }
             }
-            Refresh();
         }
 
         public async Task DownloadAsync(BlobItem item, string path)
